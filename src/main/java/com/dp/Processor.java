@@ -20,8 +20,8 @@ public class Processor {
 
     private static final String MYSQL_DRIVER = "com.mysql.jdbc.Driver";
     private static final String MYSQL_CONNECTION_URL = "jdbc:mysql://localhost:3306/employees";
-    private static final String MYSQL_USERNAME = "admin";
-    private static final String MYSQL_PWD = "admin123";
+    private static final String MYSQL_USERNAME = "root";
+    private static final String MYSQL_PWD = "password";
 
     public static void main(String[] args) {
         System.out.println("Invoked Spark");
@@ -34,19 +34,29 @@ public class Processor {
                 new JdbcRDD<>(sc.sc(), dbConnection,
                         "select * from personsOne where id >= ? and id <= ?",
                         0,
-                        100000,
-                        1000, new MapResult(), ClassManifestFactory$.MODULE$.fromClass(Object[].class));
+                        2,
+                        1, new MapResult(), ClassManifestFactory$.MODULE$.fromClass(Object[].class));
 
         JdbcRDD<Object[]> jdbcRDDTwo =
                 new JdbcRDD<>(sc.sc(), dbConnection,
                         "select * from personsTwo where id >= ? and id <= ?",
                         0,
-                        100000,
-                        1000, new MapResult(), ClassManifestFactory$.MODULE$.fromClass(Object[].class));
+                        2,
+                        1, new MapResult(), ClassManifestFactory$.MODULE$.fromClass(Object[].class));
 
 
         JavaRDD<Object[]> javaRDDOne = JavaRDD.fromRDD(jdbcRDDOne, ClassManifestFactory$.MODULE$.fromClass(Object[].class));
-        JavaRDD<Object[]> javaRDDTwo = JavaRDD.fromRDD(jdbcRDDOne, ClassManifestFactory$.MODULE$.fromClass(Object[].class));
+        JavaRDD<Object[]> javaRDDTwo = JavaRDD.fromRDD(jdbcRDDTwo, ClassManifestFactory$.MODULE$.fromClass(Object[].class));
+
+        System.out.println("javaRDDOne: =================" + javaRDDOne.collect().size());
+        System.out.println("javaRDDTwo: =================" + javaRDDTwo.collect().size());
+
+        ;
+        System.out.println("Union Result: =================" + javaRDDOne.union(javaRDDTwo).collect().size());
+
+        JavaRDD<Object[]> subtract = javaRDDOne.subtract(javaRDDTwo);
+        System.out.println("Subtract Result: =================" + subtract.collect().size());
+
 
     }
 
