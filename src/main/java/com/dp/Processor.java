@@ -14,6 +14,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Properties;
 
 public class Processor {
@@ -48,15 +49,13 @@ public class Processor {
         JavaRDD<Object[]> javaRDDOne = JavaRDD.fromRDD(jdbcRDDOne, ClassManifestFactory$.MODULE$.fromClass(Object[].class));
         JavaRDD<Object[]> javaRDDTwo = JavaRDD.fromRDD(jdbcRDDTwo, ClassManifestFactory$.MODULE$.fromClass(Object[].class));
 
+
         System.out.println("javaRDDOne: =================" + javaRDDOne.collect().size());
         System.out.println("javaRDDTwo: =================" + javaRDDTwo.collect().size());
 
-        ;
         System.out.println("Union Result: =================" + javaRDDOne.union(javaRDDTwo).collect().size());
 
-        JavaRDD<Object[]> subtract = javaRDDOne.subtract(javaRDDTwo);
-        System.out.println("Subtract Result: =================" + subtract.collect().size());
-
+        System.out.println("Subtract Result: =================" + javaRDDTwo.subtract(javaRDDOne).collect().size());
 
     }
 
